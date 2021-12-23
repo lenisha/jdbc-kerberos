@@ -13,3 +13,9 @@ sudo kinit -V elena@ENEROSORG.ONMICROSOFT.COM
 sudo kinit -V -kt /home/sqlAdmin/elena.keytab  elena
 export KRB5CCNAME=/tmp/krb5cc_1000
 sudo java -jar target/sql-kerberos-jar-with-dependencies.jar
+
+# docker
+
+docker build -t sql-kerberos:1.0 .
+docker tag sql-kerberos:1.0 acraccess.azurecr.io/sql-kerberos:1.0
+docker push acraccess.azurecr.io/sql-kerberos:1.0
