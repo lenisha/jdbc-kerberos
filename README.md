@@ -1,7 +1,5 @@
-# jdbc-kerberos
+# Java JDBC apps connecting to SQL wih windows Auth
 
-## Build
-mvn clean compile assembly:single
 
 # User Setup 
 - create user in Azure AD for Managed Domain tenant
@@ -61,16 +59,36 @@ sqlcmd -E -S SQLIAASEN.ENEROSORG.ONMICROSOFT.COM -d testdb -Q "SELECT SUSER_SNAM
 ENEROSORG\dbuser                                                                              
 ```
 
+# Java
 
-## Java execute
+
+## Build
+```
+mvn clean compile assembly:single
+```
+
+## Java Test execute
 export KRB5CCNAME=/tmp/krb5cc_1000
 sudo java -jar target/sql-kerberos-jar-with-dependencies.jar
 
-# docker
+# Kubernetes
 
+- build docker images
+```
 docker build -t sql-kerberos:1.0 .
 docker tag sql-kerberos:1.0 acraccess.azurecr.io/sql-kerberos:1.0
 docker push acraccess.azurecr.io/sql-kerberos:1.0
+```
+
+- create secret with keytab data
+```
+kubectl create secret generic keytab --from-file=./dbuser.keytab
+```
+
+- create configmap with keberos config
+```
+kubectl create cm krb5config --from-file=./krb5.conf
+```
 
 
 ## References:

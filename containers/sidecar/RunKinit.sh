@@ -15,7 +15,7 @@ fi
 
 while true
 do
-  echo "*** kinit at "+$(date -I)
+  echo "*** kinit at "+$(date -I) + "kinit -V $OPTIONS $APPEND_OPTIONS"
    kinit -V $OPTIONS $APPEND_OPTIONS
    klist -c /dev/shm/ccache 
    echo "*** Waiting for $PERIOD_SECONDS seconds"

@@ -20,16 +20,18 @@ public class SQLTest {
         ds.setAuthenticationScheme("JavaKerberos");
         
      
-        try (Connection c = ds.getConnection(); Statement s = c.createStatement();
-                ResultSet rs = s.executeQuery("SELECT SUSER_SNAME()")) 
-        {
-            while (rs.next()) {
-                System.out.println("Authenticated User: " + rs.getString(1));
+        do {
+            try (Connection c = ds.getConnection(); Statement s = c.createStatement();
+                    ResultSet rs = s.executeQuery("SELECT SUSER_SNAME()")) 
+            {
+                while (rs.next()) {
+                    System.out.println("Authenticated User: " + rs.getString(1));
+                }
             }
-        }
-             // Handle any errors that may have occurred.
-        catch (SQLException e) {
-            e.printStackTrace();
-        }
+                // Handle any errors that may have occurred.
+            catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } while (true)
     }
 }

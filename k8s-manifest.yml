@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kinit-dbapp
+spec:
+  containers:
+  - image: acraccess.azurecr.io/kinit-sidecar:1.0 
+    imagePullPolicy: Always
+    name: kinit
+    env:
+      - name: PERIOD_SECONDS
+        value: "10"
+      - name: OPTIONS
+        value: -k dbuser@ENEROSORG.ONMICROSOFT.COM
+    volumeMounts:
+      - name: ccache
+        mountPath: /dev/shm
+      - name: krb5-config
+        mountPath: /etc/krb5.conf
+        subPath: krb5.conf
+      - name: keytab-vol  
+        mountPath: /krb5/dbuser.keytab
+        subPath: dbuser.keytab
+  - image: acraccess.azurecr.io/sql-kerberos:1.0
+    imagePullPolicy: Always
+    name: dbapp    
+    volumeMounts:
+      - name: ccache
+        mountPath: /dev/shm
+      - name: krb5-config
+        mountPath: /etc/krb5.conf
+        subPath: krb5.conf
+      - name: keytab-vol  
+        mountPath: /krb5/dbuser.keytab
+        subPath: dbuser.keytab
+  volumes:
+    - name: ccache
+      emptyDir: {}
+     
+    - name: krb5-config
+      configMap:
+        name: krb5config
+        items:
+          - key: krb5.conf
+            path: krb5.conf
+    - name: keytab-vol
+      secret:
+         secretName: keytab
