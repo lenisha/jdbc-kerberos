@@ -32,6 +32,6 @@ public class SQLTest {
             catch (SQLException e) {
                 e.printStackTrace();
             }
-        } while (true)
+        } while (true);
     }
 }
