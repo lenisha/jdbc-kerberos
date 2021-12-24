@@ -17,5 +17,5 @@ RUN mkdir /krb5 && chmod 755 /krb5
 
 VOLUME ["/krb5","/dev/shm","/etc/krb5.conf.d"]
 
-RUN export KRB5CCNAME=/dev/shm/ccache
+ENV KRB5CCNAME=/dev/shm/ccache
 CMD ["java", "-jar", "sql-kerberos.jar"]

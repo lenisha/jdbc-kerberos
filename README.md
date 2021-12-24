@@ -60,7 +60,8 @@ ENEROSORG\dbuser
 ```
 
 # Java
-
+Our example uses JDBS driver java implemetation for integrated authentication with the Java Krb5LoginModule.
+we specify `integratedSecurity=true` and `authenticationScheme=JavaKerberos `connection properties.
 
 ## Build
 ```
@@ -79,17 +80,57 @@ docker build -t sql-kerberos:1.0 .
 docker tag sql-kerberos:1.0 acraccess.azurecr.io/sql-kerberos:1.0
 docker push acraccess.azurecr.io/sql-kerberos:1.0
 ```
+or
+```
+az acr build -r acraccess --image sql-kerberos:1.0  -f containers/dbapp/Dockerfile .
+
+cd containers/sidecar
+az acr build -r acraccess --image  kinit-sidecar:1.0   .
+
+```
+## Kubernetes setup
 
 - create secret with keytab data
 ```
 kubectl create secret generic keytab --from-file=./dbuser.keytab
 ```
 
-- create configmap with keberos config
+- create configmap with kerberos config
 ```
-kubectl create cm krb5config --from-file=./krb5.conf
+kubectl create cm krb5config --from-file=./containers/krb5.conf
 ```
 
+- create pod with two containers  - sidecar running kinit to refresh ticket and application 
+
+```
+kubectl apply -f containers/k8s-manifest.yaml
+```
+
+- verify logs 
+
+```
+ k logs kinit-dbapp -c kinit --tail=20
+
+*** Waiting for 10 seconds
+*** kinit at +2021-12-24 + kinit -V -k dbuser@ENEROSORG.ONMICROSOFT.COM 
+Using default cache: /dev/shm/ccache
+Using principal: dbuser@ENEROSORG.ONMICROSOFT.COM
+Authenticated to Kerberos v5
+Ticket cache: FILE:/dev/shm/ccache
+Default principal: dbuser@ENEROSORG.ONMICROSOFT.COM
+
+Valid starting     Expires            Service principal
+12/24/21 05:36:25  12/24/21 15:36:25  krbtgt/ENEROSORG.ONMICROSOFT.COM@ENEROSORG.ONMICROSOFT.COM
+        renew until 12/31/21 05:36:25
+*** Waiting for 10 seconds
+
+
+k logs kinit-dbapp -c dbapp --tail=10
+Authenticated User: ENEROSORG\dbuser
+Authenticated User: ENEROSORG\dbuser
+Authenticated User: ENEROSORG\dbuser
+Authenticated User: ENEROSORG\dbuser
+```
 
 ## References:
 [Join an Ubuntu Linux virtual machine to an Azure Active Directory Domain Services managed domain](https://docs.microsoft.com/en-us/azure/active-directory-domain-services/join-ubuntu-linux-vm)
