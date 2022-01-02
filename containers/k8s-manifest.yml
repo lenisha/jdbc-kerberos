@@ -7,6 +7,13 @@ spec:
   - image: acraccess.azurecr.io/kinit-sidecar:1.0 
     imagePullPolicy: Always
     name: kinit
+    resources:
+      limits: 
+        memory: "256Mi"
+        cpu: "500m"   
+      requests: 
+        memory: "256Mi"
+        cpu: "500m"   
     env:
       - name: PERIOD_SECONDS
         value: "10"
@@ -18,21 +25,37 @@ spec:
       - name: krb5-config
         mountPath: /etc/krb5.conf
         subPath: krb5.conf
-      - name: keytab-vol  
-        mountPath: /krb5/dbuser.keytab
-        subPath: dbuser.keytab
+     # - name: keytab-vol  
+     #   mountPath: /krb5/dbuser.keytab
+     #   subPath: dbuser.keytab
+      - name: keytab-vol-csi
+        mountPath: /krb5
+        readOnly: true
+
   - image: acraccess.azurecr.io/sql-kerberos:1.0
     imagePullPolicy: Always
-    name: dbapp    
+    name: dbapp
+    resources:
+      limits: 
+        memory: "256Mi"
+        cpu: "500m"   
+      requests: 
+        memory: "256Mi"
+        cpu: "500m"      
+    envFrom:
+    - configMapRef:
+        name: dbconfig
+        
     volumeMounts:
       - name: ccache
         mountPath: /dev/shm
       - name: krb5-config
         mountPath: /etc/krb5.conf
         subPath: krb5.conf
-      - name: keytab-vol  
-        mountPath: /krb5/dbuser.keytab
-        subPath: dbuser.keytab
+      - name: keytab-vol-csi
+        mountPath: /krb5
+        readOnly: true  
+        
   volumes:
     - name: ccache
       emptyDir: {}
@@ -43,6 +66,10 @@ spec:
         items:
           - key: krb5.conf
             path: krb5.conf
-    - name: keytab-vol
-      secret:
-         secretName: keytab
+
+    - name: keytab-vol-csi
+      csi:
+        driver: secrets-store.csi.k8s.io
+        readOnly: true
+        volumeAttributes:
+          secretProviderClass: "azure-kv-secretprovider"

@@ -1,0 +1,21 @@
+# This is a SecretProviderClass example using user-assigned identity to access your key vault
+apiVersion: secrets-store.csi.x-k8s.io/v1
+kind: SecretProviderClass
+metadata:
+  name: azure-kv-secretprovider
+spec:
+  provider: azure
+  parameters:
+    usePodIdentity: "false"
+    useVMManagedIdentity: "true"          # Set to true for using managed identity
+    userAssignedIdentityID:  "user assigned mi" # Set the clientID of the user-assigned managed identity to use
+    keyvaultName: kvforkeytab        # Set to the name of your key vault
+    tenantId: "tenant-id"                 # The tenant ID of the key vault
+    objects:  |
+      array:
+        - |
+          objectName: dbuserkt
+          objectType: secret              # object types: secret, key, or cert
+          objectEncoding: "hex"
+          objectAlias: dbuser.keytab
+    

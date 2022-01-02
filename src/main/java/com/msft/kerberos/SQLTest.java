@@ -11,11 +11,15 @@ public class SQLTest {
 
     public static void main(String[] args) {
 
+        String sqlServer = System.getenv("SQL-SERVER");
+        String dbName = System.getenv("DB-NAME");
+        
+
         // Create datasource.
         SQLServerDataSource ds = new SQLServerDataSource();
-        ds.setServerName("SQLIAASEN.ENEROSORG.ONMICROSOFT.COM");
+        ds.setServerName(sqlServer);
         ds.setPortNumber(1433);
-        ds.setDatabaseName("testdb");
+        ds.setDatabaseName(dbName);
         ds.setIntegratedSecurity(true);
         ds.setAuthenticationScheme("JavaKerberos");
         

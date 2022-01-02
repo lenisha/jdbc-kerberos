@@ -123,14 +123,21 @@ Valid starting     Expires            Service principal
 12/24/21 05:36:25  12/24/21 15:36:25  krbtgt/ENEROSORG.ONMICROSOFT.COM@ENEROSORG.ONMICROSOFT.COM
         renew until 12/31/21 05:36:25
 *** Waiting for 10 seconds
+```
 
-
+```
 k logs kinit-dbapp -c dbapp --tail=10
 Authenticated User: ENEROSORG\dbuser
 Authenticated User: ENEROSORG\dbuser
 Authenticated User: ENEROSORG\dbuser
 Authenticated User: ENEROSORG\dbuser
 ```
+
+### Keyvault setup
+ az keyvault secret set --name dbuserkt --vault-name kvforkeytab  --file dbuser.keytab --encoding hex
+
+k create configmap dbconfig --from-literal=SQL-SERVER=SQLIAASEN.ENEROSORG.ONMICROSOFT.COM --from-literal=DB-NAME=testdb
+
 
 ## References:
 [Join an Ubuntu Linux virtual machine to an Azure Active Directory Domain Services managed domain](https://docs.microsoft.com/en-us/azure/active-directory-domain-services/join-ubuntu-linux-vm)
