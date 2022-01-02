@@ -1,5 +1,7 @@
 # Java JDBC apps connecting to SQL wih windows Auth
 
+Setup for the following Architecture
+![Architecture](./WinAuthAKS.jpg)
 
 # User Setup 
 - create user in Azure AD for Managed Domain tenant
