@@ -1,4 +1,4 @@
-# Java JDBC apps connecting to SQL wih windows Auth
+# Kubernetes Java JDBC apps connecting to SQL wih windows Auth
 
 Setup for the following Architecture
 ![Architecture](./WinAuthAKS.jpg)
